@@ -18,6 +18,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:
     Prose, Prose.Internal, Prose.Internal.Missings,
+    Prose.Types,
     Prose.CharSet,
     Prose.Segmentation.Graphemes
   -- other-modules:       
