@@ -87,7 +87,7 @@ segment :: [CodePoint] -> [Grapheme]
 segment = groupBy ((not.) . isBreak)
 
 
-data Decision = Break | Don'tBreak | Dunno
+data Decision = Break | Don'tBreak
                 deriving (Eq,Show)
 
 
