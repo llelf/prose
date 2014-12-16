@@ -1,7 +1,7 @@
+-- | Grapheme Cluster Boundaries
+
 {-# LANGUAGE TypeOperators #-}
 module Prose.Segmentation.Graphemes where
-
-import Prose.Internal.Missings
 
 import qualified Data.CharSet.Unicode as Unicode
 import Data.Char
@@ -11,11 +11,17 @@ import Data.Monoid
 import Data.List (groupBy)
 import Data.Maybe
 
+import Prose.Internal.Missings
+import Prose.Types
+
+
 -- Unicode 7.0.0 Annex #29
 
+cr, lf :: CharSet
 cr = CSet.singleton '\x000d'
 lf = CSet.singleton '\x000a'
 
+control :: CharSet
 control = Unicode.lineSeparator
             ∪ Unicode.paragraphSeparator
             ∪ Unicode.control
@@ -23,21 +29,26 @@ control = Unicode.lineSeparator
             ∪ Unicode.surrogate
             ∪ Unicode.format ∩ CSet.fromList ['\xd', '\xa', '\x200c', '\x200d']
 
+extend :: CharSet
 extend = CSet.fromList [ '\x0300'..'\x036f' ] -- XXX WRONG
 
+regionalIndicator :: CharSet
 regionalIndicator = CSet.fromList [ '\x1F1E6'..'\x1F1FF' ]
 
+prepend :: CharSet
 prepend = CSet.empty
 
 spacingMark = ()
     where exceptions = [ ]
 
+l,v,t,lv,lvt :: CharSet
 l = CSet.empty
 v = CSet.empty
 t = CSet.empty
 lv = CSet.empty
 lvt = CSet.empty
 
+whatever :: CharSet
 whatever = CSet.full
 
 
@@ -46,8 +57,8 @@ data Rule = CharSet :× CharSet  -- do break
 
 rules :: [Rule]
 rules = [
-      -- taken care of in segment            -- GB1
-      -- ditto                               -- GB2
+      --         SOT :÷ whatever             -- GB1, taken care of in segment
+      --    whatever :÷ EOT                  -- GB2, ditto
                   cr :× lf,                  -- GB3
  (control ∪ cr ∪ lf) :÷ whatever,            -- GB4
             whatever :÷ (control ∪ cr ∪ lf), -- GB5
@@ -72,7 +83,7 @@ segment (c:cs) = go [c] c cs
                        | otherwise   = go (gr<>[b]) b rest
 -}
 
-segment :: [Char] -> [[Char]]
+segment :: [CodePoint] -> [Grapheme]
 segment = groupBy ((not.) . isBreak)
 
 
