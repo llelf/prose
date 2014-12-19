@@ -21,8 +21,11 @@ library
     Prose.Types,
     Prose.CharSet,
     Prose.Segmentation.Graphemes
-  -- other-modules:       
+  other-modules:
+    Prose.Segmentation.Tests
+
   -- other-extensions:    
-  build-depends:   base, text, charset >= 0.3.7
+  build-depends:   base, text, charset >= 0.3.7,
+    QuickCheck
   -- hs-source-dirs:
   default-language:    Haskell2010
