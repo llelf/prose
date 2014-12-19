@@ -41,10 +41,13 @@ prepend = CSet.empty
 spacingMark = ()
     where exceptions = [ ]
 
+
 l,v,t,lv,lvt :: CharSet
-l = CSet.empty
-v = CSet.empty
-t = CSet.empty
+-- Hangul_Syllable_Type of
+l = (⊙)['\x1100'..'\x115F'] ∪ (⊙)['\xA960'..'\xA97C'] -- Leading_Jamo
+v = (⊙)['\x1160'..'\x11A7'] ∪ (⊙)['\xD7B0'..'\xD7C6'] -- Vowel_Jamo
+t = (⊙)['\x11A8'..'\x11FF'] ∪ (⊙)['\xD7CB'..'\xD7FB'] -- Trailing_Jamo
+
 lv = CSet.empty
 lvt = CSet.empty
 
