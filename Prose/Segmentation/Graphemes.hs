@@ -1,7 +1,8 @@
 -- | Grapheme Cluster Boundaries
 
 {-# LANGUAGE TypeOperators #-}
-module Prose.Segmentation.Graphemes where
+module Prose.Segmentation.Graphemes
+    (segment) where
 
 import qualified Data.CharSet.Unicode as Unicode
 import Data.Char
