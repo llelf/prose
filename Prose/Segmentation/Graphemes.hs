@@ -27,13 +27,13 @@ control = Unicode.lineSeparator
             ∪ Unicode.control
             ∪ Unicode.notAssigned ∩ defaultIgnorableCodePoint
             ∪ Unicode.surrogate
-            ∪ Unicode.format ∩ CSet.fromList ['\xd', '\xa', '\x200c', '\x200d']
+            ∪ Unicode.format ∩ (⊙)['\xd', '\xa', '\x200c', '\x200d']
 
 extend :: CharSet
 extend = CSet.fromList [ '\x0300'..'\x036f' ] -- XXX WRONG
 
 regionalIndicator :: CharSet
-regionalIndicator = CSet.fromList [ '\x1F1E6'..'\x1F1FF' ]
+regionalIndicator = (⊙)[ '\x1F1E6'..'\x1F1FF' ]
 
 prepend :: CharSet
 prepend = CSet.empty
