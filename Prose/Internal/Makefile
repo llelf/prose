@@ -5,3 +5,5 @@ Grapheme_Extend.hs:
 SpacingMark.hs:
 	./derive.hs set ../../data/GraphemeBreakProperty.txt SpacingMark
 
+GraphemeBreakTest.hs:
+	./derive.hs break-test ../../data-test/GraphemeBreakTest.txt GraphemeBreakTest
