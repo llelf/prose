@@ -1,32 +1,41 @@
 #!/usr/bin/env runhaskell
+
 module Main where               -- stupid haskell-mode
 
 import System.Environment
 import Text.Parsec
 import Text.Printf
+import qualified Data.Map as Map
 import Data.List
+import Data.List.Split
 import Data.Char
 import Data.Maybe
 
-main = do [file,name] <- getArgs
+main = do [act,file,name] <- getArgs
           s <- readFile file
-          writeFile (name++".hs") (conv name s)
+          writeFile (name++".hs") (conv ((Map.!) actions act) name s)
 
-data Pat = Pat String
+actions = Map.fromList [("set",        convLine),
+                        ("break-test", convLine1)]
 
-conv name = (prelude name ++) . (++coda) . intercalate ",\n" . map ("\t"++) . catMaybes . map (convLine name) . lines
+
+conv convLine name =
+      (prelude name ++)
+    . (++coda)
+    . intercalate ",\n"
+    . map ("\t"++) . catMaybes . map (convLine name) . lines
 
 prelude name = unlines [ "-- generated",
                          "module Prose.Internal."++name++" where",
                          (map toLower name) ++ " = [" ]
-coda = " ]"
+coda = " ]\n"
 
 
 convLine :: String -> String -> Maybe String
 convLine name s =
     case parse (line name) "" s of
-               Right (Left x)      -> Just $ printf "['\\x%s']" x
-               Right (Right (x,y)) -> Just $ printf "['\\x%s'..'\\x%s']" x y
+               Right (Left x)      -> Just $ printf "[%s]" (xpoint x)
+               Right (Right (x,y)) -> Just $ printf "[%s..%s]" (xpoint x) (xpoint y)
                Left _ -> Nothing
 
 
@@ -35,6 +44,12 @@ line name = try (do { x <- point; string ".."; y <- point; isName; return (Right
              <|> do { x <- point; isName; return (Left x) }
     where isName = spaces >> string "; " >> string name
 
+convLine1 :: String -> String -> Maybe String
+convLine1 _ s | "#" `isPrefixOf` s = Nothing
+              | otherwise          = Just $ show [ concatMap ("\\x"++) s | s <- ss ]
+    where ss = map (filter(/="×")) . wordsBy (=="÷") . takeWhile (/="#") . words $ s
+
 
 point = many1 hexDigit
 
+xpoint = printf "'\\x%s'" :: String -> String
