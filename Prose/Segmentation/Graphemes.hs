@@ -75,7 +75,8 @@ rules = [
            (lvt ∪ t) :× t,                   -- GB8
    regionalIndicator :× regionalIndicator,   -- GB8a
             whatever :× extend,              -- GB9
-                 -- TODO
+            whatever :× spacingMark,         -- GB9a
+             prepend :× whatever,            -- GB9b
             whatever :÷ whatever             -- GB10
  ]
 
