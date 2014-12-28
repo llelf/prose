@@ -4,6 +4,7 @@ import Test.QuickCheck
 import Data.Char
 import Prose.Types
 import Prose.Segmentation.Graphemes as Graph
+import Prose.Internal.GraphemeBreakTest as GBT
 
 a1s = "óòo̧ö" :: String
 a1accents = filter (not.isLetter) a1s
@@ -20,4 +21,12 @@ size :: [Grapheme] -> Int
 size = sum . map length
 
 g1_prop s = size (Graph.segment s) == length s
+
+
+
+-- GraphemeBreakTest
+g2_check = all ok GBT.graphemebreaktest
+    where ok broken = Graph.segment (concat broken) == broken
+                      || error (show broken)
+
 
