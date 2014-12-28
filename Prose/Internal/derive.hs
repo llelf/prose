@@ -46,10 +46,13 @@ line name = try (do { x <- point; string ".."; y <- point; isName; return (Right
 
 convLine1 :: String -> String -> Maybe String
 convLine1 _ s | "#" `isPrefixOf` s = Nothing
-              | otherwise          = Just $ show [ concatMap ("\\x"++) s | s <- ss ]
-    where ss = map (filter(/="×")) . wordsBy (=="÷") . takeWhile (/="#") . words $ s
+              | otherwise          = Just $ show ss
+    where ss = map (map point2c) . map (filter(/="×")) . wordsBy (=="÷") . takeWhile (/="#") . words $ s
 
 
 point = many1 hexDigit
 
 xpoint = printf "'\\x%s'" :: String -> String
+point2c = read . xpoint :: String -> Char
+
+
