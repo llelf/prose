@@ -1,12 +1,21 @@
 module Prose.Internal.Missings
-    (defaultIgnorableCodePoint)
     where
 
 import Data.Char
-import qualified Data.CharSet as CSet
+import Prose.CharSet
 
-defaultIgnorableCodePoint :: CSet.CharSet
-defaultIgnorableCodePoint = CSet.fromList $ map chr $ concat
+import Prose.Internal.SpacingMark as SpacingMark
+import Prose.Internal.Grapheme_Extend as GraphemeExtend
+
+spacingMark :: CharSet
+spacingMark = fromList . concat $ SpacingMark.spacingmark
+
+graphemeExtend :: CharSet
+graphemeExtend = fromList . concat $ GraphemeExtend.grapheme_extend
+
+
+defaultIgnorableCodePoint :: CharSet
+defaultIgnorableCodePoint = fromList $ map chr $ concat
  [
                   [0x00AD],
                   [0x034F],

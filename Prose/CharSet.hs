@@ -2,7 +2,7 @@ module Prose.CharSet ((∩),(∪),(⊙),
                       module Data.CharSet)
     where
 
-import Data.CharSet
+import Data.CharSet hiding (map)
 
 
 (⊙) :: [Char] -> CharSet

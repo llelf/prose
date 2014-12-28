@@ -12,7 +12,7 @@ import Data.Monoid
 import Data.List (groupBy)
 import Data.Maybe
 
-import Prose.Internal.Missings
+import qualified Prose.Internal.Missings as Missings
 import Prose.Types
 
 
@@ -26,12 +26,12 @@ control :: CharSet
 control = Unicode.lineSeparator
             ∪ Unicode.paragraphSeparator
             ∪ Unicode.control
-            ∪ Unicode.notAssigned ∩ defaultIgnorableCodePoint
+            ∪ Unicode.notAssigned ∩ Missings.defaultIgnorableCodePoint
             ∪ Unicode.surrogate
             ∪ Unicode.format ∩ (⊙)['\xd', '\xa', '\x200c', '\x200d']
 
 extend :: CharSet
-extend = CSet.fromList [ '\x0300'..'\x036f' ] -- XXX WRONG
+extend = Missings.graphemeExtend
 
 regionalIndicator :: CharSet
 regionalIndicator = (⊙)[ '\x1F1E6'..'\x1F1FF' ]
@@ -39,8 +39,9 @@ regionalIndicator = (⊙)[ '\x1F1E6'..'\x1F1FF' ]
 prepend :: CharSet
 prepend = CSet.empty
 
-spacingMark = ()
-    where exceptions = [ ]
+spacingMark :: CharSet
+spacingMark = Missings.spacingMark
+
 
 
 l,v,t,lv,lvt :: CharSet
@@ -56,8 +57,11 @@ whatever :: CharSet
 whatever = CSet.full
 
 
+-- This won't suffice for word/sentence segmentation
 data Rule = CharSet :× CharSet  -- do break
           | CharSet :÷ CharSet  -- do not break
+
+
 
 rules :: [Rule]
 rules = [
