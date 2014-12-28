@@ -1,4 +1,4 @@
-module Prose.Segmentation.Tests where
+module SegmentationTests where
 
 import Test.QuickCheck
 import Data.Char
