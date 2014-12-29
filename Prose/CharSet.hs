@@ -1,4 +1,4 @@
-module Prose.CharSet ((∩),(∪),(⊙),
+module Prose.CharSet ((∩),(∪),(⊙),(∖),
                       module Data.CharSet)
     where
 
@@ -13,4 +13,5 @@ import Data.CharSet hiding (map)
 infixl 7 ∩
 infixl 6 ∪
 
-
+(∖) = difference
+infixl 6 ∖
