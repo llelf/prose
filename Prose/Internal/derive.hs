@@ -42,7 +42,7 @@ convLine name s =
 line :: String -> Parsec String () (Either String (String,String))
 line name = try (do { x <- point; string ".."; y <- point; isName; return (Right (x,y)) })
              <|> do { x <- point; isName; return (Left x) }
-    where isName = spaces >> string "; " >> string name
+    where isName = spaces >> string "; " >> string name >> space
 
 convLine1 :: String -> String -> Maybe String
 convLine1 _ s | "#" `isPrefixOf` s = Nothing
