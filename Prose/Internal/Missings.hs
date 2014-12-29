@@ -6,6 +6,8 @@ import Prose.CharSet
 
 import Prose.Internal.SpacingMark as SpacingMark
 import Prose.Internal.Grapheme_Extend as GraphemeExtend
+import Prose.Internal.LV as Hangul_LV
+import Prose.Internal.LVT as Hangul_LVT
 
 spacingMark :: CharSet
 spacingMark = fromList . concat $ SpacingMark.spacingmark
@@ -13,6 +15,9 @@ spacingMark = fromList . concat $ SpacingMark.spacingmark
 graphemeExtend :: CharSet
 graphemeExtend = fromList . concat $ GraphemeExtend.grapheme_extend
 
+hangul_lv, hangul_lvt :: CharSet
+hangul_lv  = fromList . concat $ Hangul_LV.lv
+hangul_lvt = fromList . concat $ Hangul_LVT.lvt
 
 defaultIgnorableCodePoint :: CharSet
 defaultIgnorableCodePoint = fromList $ map chr $ concat
