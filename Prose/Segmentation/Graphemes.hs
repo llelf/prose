@@ -10,6 +10,7 @@ import Prose.CharSet as CSet hiding (map)
 import Prose.CharSet (CharSet)
 import Data.Monoid
 import Data.List (groupBy)
+import Data.List.Sequences as ListSeq
 import Data.Maybe
 
 import qualified Prose.Internal.Missings as Missings
@@ -93,7 +94,7 @@ segment (c:cs) = go [c] c cs
 -}
 
 segment :: [CodePoint] -> [Grapheme]
-segment = groupBy ((not.) . isBreak)
+segment = ListSeq.splitSeq ((not.) . isBreak)
 
 
 data Decision = Break | Don'tBreak
