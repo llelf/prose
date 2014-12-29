@@ -58,8 +58,8 @@ whatever = CSet.full
 
 
 -- This won't suffice for word/sentence segmentation
-data Rule = CharSet :× CharSet  -- do break
-          | CharSet :÷ CharSet  -- do not break
+data Rule = CharSet :× CharSet  -- do not break
+          | CharSet :÷ CharSet  -- do break
 
 
 
