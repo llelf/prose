@@ -17,15 +17,19 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:
-    Prose, Prose.Internal, Prose.Internal.Missings,
+    Prose, Prose.Internal,
+      Prose.Internal.Missings,
+        Prose.Internal.SpacingMark, Prose.Internal.Grapheme_Extend,
+        Prose.Internal.LV, Prose.Internal.LVT,
     Prose.Types,
     Prose.CharSet,
     Prose.Segmentation.Graphemes
+
   other-modules:
-    Prose.Segmentation.Tests
 
   -- other-extensions:    
   build-depends:   base, text, charset >= 0.3.7,
+    data-list-sequences,
     QuickCheck
   -- hs-source-dirs:
   default-language:    Haskell2010
