@@ -29,7 +29,7 @@ control = Unicode.lineSeparator
             ∪ Unicode.control
             ∪ Unicode.notAssigned ∩ Missings.defaultIgnorableCodePoint
             ∪ Unicode.surrogate
-            ∪ Unicode.format ∩ (⊙)['\xd', '\xa', '\x200c', '\x200d']
+            ∪ (Unicode.format ∖ (⊙)['\xd', '\xa', '\x200c', '\x200d'])
 
 extend :: CharSet
 extend = Missings.graphemeExtend
