@@ -1,7 +1,8 @@
-module Prose.Types (CodePoint,Grapheme,Prose())
+module Prose.Types (CodePoint,Grapheme,Prose(..))
     where
 
 import Data.Text (Text)
+import Data.ByteString (ByteString)
 
 -- | Unicode code point
 type CodePoint = Char
@@ -10,9 +11,7 @@ type CodePoint = Char
 type Grapheme = [Char]
 
 
-data Prose = Prose {
-      nfc :: Text                 -- ^ Text's utf-16 data in NFC
-}
-
+data Prose = T Text             -- ^ Text's utf-16 data in NFC
+           | U ByteString       -- ^ ByteString with utf-8 in NFC
 
 

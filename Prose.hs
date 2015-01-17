@@ -1,3 +1,4 @@
 
-module Prose where
+module Prose (Prose) where
 
+import Prose.Types
