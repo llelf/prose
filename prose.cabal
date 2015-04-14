@@ -30,6 +30,10 @@ Library
   -- other-extensions:    
   build-depends:   base, text, charset >= 0.3.7,
     data-list-sequences, bytestring, utf8-string,
+    -- tooling
+    lens-family, containers,
+    parsec, tagsoup, hxt, hxt-tagsoup,
+    -- tests
     QuickCheck
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -42,5 +46,5 @@ Benchmark bench
   build-depends: base, text-icu, criterion,
                  charset, text, bytestring,
                  data-list-sequences >= 0.1
-
+  ghc-options: -O2
 
