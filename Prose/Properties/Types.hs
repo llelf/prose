@@ -1,15 +1,18 @@
+{-# LANGUAGE TemplateHaskell #-}
 
 module Prose.Properties.Types where
 
+import Lens.Family.TH
+
 data CharProps = CharProps {
-      name :: String,
-      generalCategory :: GeneralCategory,
-      upper :: Bool, lower :: Bool,
-      otherUpper :: Bool, otherLower :: Bool,
-      nfc_qc :: QCValue,
-      nfd_qc :: Bool,
-      nfkc_qc :: QCValue,
-      nfkd_qc :: Bool
+      _name :: String,
+      _generalCategory :: GeneralCategory,
+      _upper :: Bool, _lower :: Bool,
+      _otherUpper :: Bool, _otherLower :: Bool,
+      _nfc_qc :: QCValue,
+      _nfd_qc :: Bool,
+      _nfkc_qc :: QCValue,
+      _nfkd_qc :: Bool
 } deriving Show
 
 
@@ -26,3 +29,4 @@ data GeneralCategory =
 
 data QCValue = QCYes | QCNo | QCMaybe deriving Show
 
+makeLenses ''CharProps
