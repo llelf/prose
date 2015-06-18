@@ -12,7 +12,15 @@ data CharProps = CharProps {
       _nfc_qc :: QCValue,
       _nfd_qc :: Bool,
       _nfkc_qc :: QCValue,
-      _nfkd_qc :: Bool
+      _nfkd_qc :: Bool,
+      _combiningClass :: Int,
+      _dash :: Bool,
+      _hyphen :: Bool,
+      _quotationMark :: Bool,
+      _terminalPunctuation :: Bool,
+      _diactric :: Bool,
+      _extender :: Bool,
+      _decomposition :: Decomp
 } deriving Show
 
 
@@ -28,5 +36,7 @@ data GeneralCategory =
         deriving (Show,Read)
 
 data QCValue = QCYes | QCNo | QCMaybe deriving Show
+
+data Decomp = DCSelf | DC [Char] deriving Show
 
 makeLenses ''CharProps
