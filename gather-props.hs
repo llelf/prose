@@ -13,6 +13,7 @@ import Data.Char (chr)
 import qualified Data.Map as M
 import Lens.Family2
 
+{-
 propsMap :: [(String, String -> CharProps -> CharProps)]
 propsMap = [
  ("na",       set name),
@@ -24,17 +25,33 @@ propsMap = [
  ("Upper",    set upper . readYN),
  ("OUpper",   set otherUpper . readYN),
  ("Lower",    set lower . readYN),
- ("OLower",   set otherLower . readYN)
+ ("OLower",   set otherLower . readYN),
+ ("ccc",      set combiningClass . read),
+ ("Dash",     set dash . readYN),
+ ("Hyphen",   set hyphen . readYN),
+ ("QMark",    set quotationMark . readYN),
+ ("Term",     set terminalPunctuation . readYN)
  ]
+-}
 
 
-toProp (TagOpen _ psm) = (chr ix, CharProps{..})
+toProp (TagOpen _ psm) = [ (ix, CharProps{..}) | ix <- ixs ]
     where _name            = ps!"na"
           _generalCategory = read $ ps!"gc"
-          ix = read . ("0x"++) $ ps!"cp" :: Int
+          ixs = case (fmap readCodePoint . (`M.lookup` ps)) <$> ["cp","first-cp","last-cp"] of
+                  [Just x, Nothing, Nothing] -> [x]
+                  [Nothing, Just a, Just b]  -> [a..b]
           [_nfd_qc, _nfkd_qc] = readYN . (ps!) <$> ["NFD_QC", "NFKD_QC"]
           [_nfc_qc, _nfkc_qc] = readQCValue . (ps!) <$> ["NFC_QC", "NFKC_QC"]
           [_upper, _otherUpper, _lower, _otherLower] = readYN . (ps!) <$> ["Upper","OUpper","Lower","OLower"]
+          _combiningClass      = read $ ps!"ccc"
+          _dash                = readYN $ ps!"Dash"
+          _hyphen              = readYN $ ps!"Hyphen"
+          _quotationMark       = readYN $ ps!"QMark"
+          _terminalPunctuation = readYN $ ps!"Term"
+          _diactric            = readYN $ ps!"Dia"
+          _extender            = readYN $ ps!"Ext"
+          _decomposition       = readDecomp $ ps!"dm"
           ps = M.fromList psm
 
 
@@ -49,6 +66,13 @@ readQCValue "M" = QCMaybe
 readYN :: String -> Bool
 readYN "Y" = True
 readYN "N" = False
+
+readCodePoint :: String -> Char
+readCodePoint = chr . read . ("0x"++)
+
+readDecomp "#" = DCSelf
+readDecomp s = DC . map readCodePoint $ words s
+
 
 main = do
   input <- readFile "data/ucd.all.flat.xml"
