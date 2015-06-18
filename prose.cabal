@@ -34,6 +34,7 @@ Library
     lens-family-th,
     lens-family, containers,
     parsec, tagsoup, hxt, hxt-tagsoup,
+    split, binary,
     -- tests
     QuickCheck
   -- hs-source-dirs:

@@ -1,8 +1,9 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, DeriveGeneric #-}
 
 module Prose.Properties.Types where
 
 import Lens.Family.TH
+import GHC.Generics
 
 data CharProps = CharProps {
       _name :: String,
@@ -21,7 +22,8 @@ data CharProps = CharProps {
       _diactric :: Bool,
       _extender :: Bool,
       _decomposition :: Decomp
-} deriving Show
+} deriving (Show,Generic)
+
 
 
 data GeneralCategory =
@@ -33,10 +35,10 @@ data GeneralCategory =
     Sm|Sc|Sk|So|          --S
     Zs|Zl|Zp|             --Z
     Cc|Cf|Cs|Co|Cn        --C
-        deriving (Show,Read)
+        deriving (Show,Read,Generic)
 
-data QCValue = QCYes | QCNo | QCMaybe deriving Show
+data QCValue = QCYes | QCNo | QCMaybe deriving (Show,Generic)
 
-data Decomp = DCSelf | DC [Char] deriving Show
+data Decomp = DCSelf | DC [Char] deriving (Show,Generic)
 
 makeLenses ''CharProps

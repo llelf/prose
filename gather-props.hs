@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Main where
@@ -13,6 +14,8 @@ import Data.Char (chr)
 import Data.List (intersperse,intercalate)
 import Data.List.Split
 import qualified Data.Map as M
+import Control.Exception
+import Data.Binary as Bin
 import Lens.Family2
 
 {-
@@ -76,23 +79,40 @@ readDecomp "#" = DCSelf
 readDecomp s = DC . map readCodePoint $ words s
 
 
-main = do
+
+main = do props <- (readSavedProps
+                   `catch` \(e::IOException) ->
+                   saveProps)
+          print $ length props
+
+
+
+readSavedProps = Bin.decode <$> L.readFile "properties.data"
+
+
+saveProps = do
   input <- readFile "data/ucd.all.flat.xml"
   let parsed = parseTags input
   let props = concatMap toProp . filter isChar $ parsed :: [(Char,CharProps)]
-
-  writeUCD props
-
+  --writeUCD props
+  writeBinary props
+  pure props
       where isChar (TagOpen "char" _) = True
             isChar _                  = False
 
 
 
+instance Binary CharProps
+instance Binary GeneralCategory
+instance Binary QCValue
+instance Binary Decomp
+
+writeBinary props = L.writeFile "properties.data" (Bin.encode props)
 
 writeUCD props = do
   let chunks = chunksOf 1024 props
-  writeFile file $ concat ["module Prose.UCD (ucd) where\n",
-                           "import Prose.Properties.Types\n"]
+  writeFile file $ unlines ["module Prose.UCD (ucd) where",
+                            "import Prose.Properties.Types"]
 
   forM_ (zip [1..] chunks) $ \(i,p) -> writePart i p
 
