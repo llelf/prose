@@ -1,15 +1,17 @@
 {-# LANGUAGE RecordWildCards #-}
 
-
 module Main where
 
 import Control.Monad
 import Text.HTML.TagSoup
 import qualified Data.ByteString.Lazy as L
 import Control.Applicative
+import Data.Monoid
 import Prose.Properties.Types
 import Data.Map ((!))
 import Data.Char (chr)
+import Data.List (intersperse,intercalate)
+import Data.List.Split
 import qualified Data.Map as M
 import Lens.Family2
 
@@ -77,10 +79,36 @@ readDecomp s = DC . map readCodePoint $ words s
 main = do
   input <- readFile "data/ucd.all.flat.xml"
   let parsed = parseTags input
-  let props = map toProp . filter isChar $ parsed
-  print $ props
+  let props = concatMap toProp . filter isChar $ parsed :: [(Char,CharProps)]
+
+  writeUCD props
+
       where isChar (TagOpen "char" _) = True
             isChar _                  = False
+
+
+
+
+writeUCD props = do
+  let chunks = chunksOf 1024 props
+  writeFile file $ concat ["module Prose.UCD (ucd) where\n",
+                           "import Prose.Properties.Types\n"]
+
+  forM_ (zip [1..] chunks) $ \(i,p) -> writePart i p
+
+  appendFile file $ "ucd = concat["
+                 <> intercalate "++" ["ucd"<>show i | i<-[1..length chunks]]
+                 <> "]"
+
+      where file = "Prose/UCD.hs"
+
+            writePart :: Int -> [(Char,CharProps)] -> IO ()
+            writePart n pp = appendFile file $ concat [
+                  "ucd"<>show n<>" :: [(Char,CharProps)]\n",
+                  "ucd"<>show n<>" = \n",
+                  "  " <> show pp,
+                  "\n"]
+
 
 
 
