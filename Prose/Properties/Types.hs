@@ -39,6 +39,6 @@ data GeneralCategory =
 
 data QCValue = QCYes | QCNo | QCMaybe deriving (Show,Generic)
 
-data Decomp = DCSelf | DC [Char] deriving (Show,Generic)
+data Decomp = DCSelf | DC [Char] deriving (Show,Eq,Generic)
 
 makeLenses ''CharProps

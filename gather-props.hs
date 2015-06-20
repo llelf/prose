@@ -8,6 +8,7 @@ import Text.HTML.TagSoup
 import qualified Data.ByteString.Lazy as L
 import Control.Applicative
 import Data.Monoid
+import Control.Arrow
 import Prose.Properties.Types
 import Data.Map ((!))
 import Data.Char (chr)
@@ -80,10 +81,22 @@ readDecomp s = DC . map readCodePoint $ words s
 
 
 
+
+genDecompositions props = writeFile "Prose/Properties/Decomp.hs" $
+                          unlines ["module Prose.Properties.Decomp where",
+                                   "import Data.Map",
+                                   "import Prose.Properties.Types",
+                                   "decomp=" <> show dat]
+    where dat = M.fromList . filter (\(_,pro) -> pro /= DCSelf)
+                . map (second _decomposition) $ props
+
+
+
 main = do props <- (readSavedProps
                    `catch` \(e::IOException) ->
                    saveProps)
           print $ length props
+          genDecompositions props
 
 
 
