@@ -41,4 +41,9 @@ data QCValue = QCYes | QCNo | QCMaybe deriving (Show,Generic)
 
 data Decomp = DCSelf | DC [Char] deriving (Show,Eq,Generic)
 
+decompositionOf :: Char -> Decomp -> [Char]
+decompositionOf c DCSelf  = [c]
+decompositionOf c (DC ds) = ds
+
+
 makeLenses ''CharProps
