@@ -58,6 +58,7 @@ toProp (TagOpen _ psm) = [ (ix, CharProps{..}) | ix <- ixs ]
           _diactric            = readYN $ ps!"Dia"
           _extender            = readYN $ ps!"Ext"
           _decomposition       = readDecomp $ ps!"dm"
+          _decompositionType   = readDecompType $ ps!"dt"
           ps = M.fromList psm
 
 
@@ -79,18 +80,31 @@ readCodePoint = chr . read . ("0x"++)
 readDecomp "#" = DCSelf
 readDecomp s = DC . map readCodePoint $ words s
 
+readDecompType "none" = Nothing
+readDecompType s = Just (table!s)
+    where table = M.fromList [
+                    ("can",DTCanonical),("com",DTCompat),("enc",DTCircle),
+                    ("fin",DTFinal),("font",DTFont),("fra",DTFraction),
+                    ("init",DTInitial),("iso",DTIsolated),("med",DTMedial),
+                    ("nar",DTNarrow),("nb",DTNoBreak),("sml",DTSmall),
+                    ("sqr",DTSquare),("sub",DTSub),("sup",DTSuper),
+                    ("vert",DTVertical),("wide",DTWide)
+              ]
+
+
+genDecompositions props = gen "DecompD" "[Char]" (show dat)
+    where dat :: M.Map Char [Char]
+          dat = M.fromList
+                . map (\(c,pro) -> (c, decompositionOf c (_decomposition pro)))
+                . filter (\(_,pro) -> _decompositionType pro == Just DTCanonical
+                                      && _decomposition pro /= DCSelf)
+                $ props
 
 
 
-genDecompositions props = gen "Decomp" (show dat)
-    where dat = M.fromList
-                . map (\(c,pro) -> (c, decompositionOf c pro))
-                . filter (\(_,pro) -> pro /= DCSelf)
-                . map (second _decomposition) $ props
-
-
-genCCC props = gen "CombiningClass" (show dat)
-    where dat = M.fromList
+genCCC props = gen "CombiningClass" "Int" (show dat)
+    where dat :: M.Map Char Int
+          dat = M.fromList
                 . filter (\(_,cc) -> cc /= 0)
                 . map (second _combiningClass) $ props
 
@@ -136,6 +150,7 @@ instance Binary CharProps
 instance Binary GeneralCategory
 instance Binary QCValue
 instance Binary Decomp
+instance Binary DecompType
 
 writeBinary props = L.writeFile "properties.data" (Bin.encode props)
 

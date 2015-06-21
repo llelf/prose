@@ -21,7 +21,8 @@ data CharProps = CharProps {
       _terminalPunctuation :: Bool,
       _diactric :: Bool,
       _extender :: Bool,
-      _decomposition :: Decomp
+      _decomposition :: Decomp,
+      _decompositionType :: Maybe DecompType
 } deriving (Show,Generic)
 
 
@@ -44,6 +45,14 @@ data Decomp = DCSelf | DC [Char] deriving (Show,Eq,Generic)
 decompositionOf :: Char -> Decomp -> [Char]
 decompositionOf c DCSelf  = [c]
 decompositionOf c (DC ds) = ds
+
+
+data DecompType = DTCanonical | DTCompat | DTFont
+                | DTNoBreak | DTInitial | DTMedial | DTFinal
+                | DTIsolated | DTCircle | DTSuper | DTSub
+                | DTVertical | DTWide | DTNarrow
+                | DTSmall | DTSquare | DTFraction
+                  deriving (Show,Eq,Generic)
 
 
 makeLenses ''CharProps
