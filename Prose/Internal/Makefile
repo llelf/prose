@@ -13,3 +13,7 @@ LVT.hs:
 
 GraphemeBreakTest.hs:
 	./derive.hs break-test ../../data-test/GraphemeBreakTest.txt GraphemeBreakTest
+
+NormalizationTest.hs:
+	./derive.hs norm-test ../../data-test/NormalizationTest.txt NormalizationTest
+

@@ -16,7 +16,8 @@ main = do [act,file,name] <- getArgs
           writeFile (name++".hs") (conv ((Map.!) actions act) name s)
 
 actions = Map.fromList [("set",        convLine),
-                        ("break-test", convLine1)]
+                        ("break-test", convLine1),
+                        ("norm-test",  convNormTest)]
 
 
 conv convLine name =
@@ -49,6 +50,13 @@ convLine1 _ s | "#" `isPrefixOf` s = Nothing
               | otherwise          = Just $ show ss
     where ss = map (map point2c) . map (filter(/="×")) . wordsBy (=="÷") . takeWhile (/="#") . words $ s
 
+
+
+convNormTest :: String -> String -> Maybe String
+convNormTest _ s | "#" `isPrefixOf` s     = Nothing
+                 | "@Part" `isPrefixOf` s = Nothing
+                 | otherwise              = Just $ show ss
+    where ss = map (map point2c . words) . take 5 . wordsBy (==';') $ s
 
 point = many1 hexDigit
 
