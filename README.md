@@ -2,6 +2,8 @@ Pure-Haskell proper unicode strings
 
 ✓⃞ grapheme segmentation
 
+normalization:  
+  ✓⃞ NFD
 
 -------
 
