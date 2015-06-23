@@ -1,5 +1,11 @@
 Pure-Haskell proper unicode strings
 
+```
+λ> graphemes "བོད་ཀྱི་སྐད་ཡིག།"
+["བོ","ད","་","ཀྱི","་","སྐ","ད","་","ཡི","ག","།"]
+```
+
+
 ✓⃞ grapheme segmentation
 
 normalization:  
