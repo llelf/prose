@@ -1,4 +1,4 @@
-module Prose.Normalization.D where
+module Prose.Normalization where
 
 import qualified Prose.Properties.DecompD as D
 import qualified Prose.Properties.CombiningClass as CC
