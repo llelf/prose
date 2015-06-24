@@ -92,11 +92,16 @@ readDecompType s = Just (table!s)
               ]
 
 
-genDecompositions props = gen "DecompD" "[Char]" (show dat)
-    where dat :: M.Map Char [Char]
-          dat = M.fromList
+genDecompositions props = do gen "DecompD" "[Char]" (show datD)
+                             gen "DecompKD" "[Char]" (show datKD)
+    where datD, datKD :: M.Map Char [Char]
+          datD = datFiltered ((== Just DTCanonical) . _decompositionType)
+          datKD = datFiltered (const True)
+
+          datFiltered :: (CharProps -> Bool) -> M.Map Char [Char]
+          datFiltered filt = M.fromList
                 . map (\(c,pro) -> (c, decompositionOf c (_decomposition pro)))
-                . filter (\(_,pro) -> _decompositionType pro == Just DTCanonical
+                . filter (\(_,pro) -> filt pro
                                       && _decomposition pro /= DCSelf)
                 $ props
 
