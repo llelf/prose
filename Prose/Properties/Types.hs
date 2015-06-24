@@ -22,7 +22,8 @@ data CharProps = CharProps {
       _diactric :: Bool,
       _extender :: Bool,
       _decomposition :: Decomp,
-      _decompositionType :: Maybe DecompType
+      _decompositionType :: Maybe DecompType,
+      _fullDecompositionExclusion :: Bool
 } deriving (Show,Generic)
 
 

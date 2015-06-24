@@ -15,6 +15,7 @@ import Data.Char (chr,toLower)
 import Data.List (intersperse,intercalate)
 import Data.List.Split
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Control.Exception
 import Data.Binary as Bin
 import Lens.Family2
@@ -59,6 +60,7 @@ toProp (TagOpen _ psm) = [ (ix, CharProps{..}) | ix <- ixs ]
           _extender            = readYN $ ps!"Ext"
           _decomposition       = readDecomp $ ps!"dm"
           _decompositionType   = readDecompType $ ps!"dt"
+          _fullDecompositionExclusion = readYN $ ps!"Comp_Ex"
           ps = M.fromList psm
 
 
@@ -113,6 +115,12 @@ genCCC props = gen "CombiningClass" "Map Char Int" (show dat)
                 . map (second _combiningClass) $ props
 
 
+genFullDecExcl props = gen "FullDecompExclusions" "Set Char" (show dat)
+    where dat :: S.Set Char
+          dat = S.fromList
+                . map fst
+                . filter (_fullDecompositionExclusion . snd)
+                $ props
 
 gen :: String -> String -> String -> IO ()
 gen name typ dat = writeFile ("Prose/Properties/" <> name <> ".hs") $
@@ -132,6 +140,7 @@ main = do props <- (readSavedProps
           print $ length props
           genDecompositions props
           genCCC props
+          genFullDecExcl props
 
 
 
