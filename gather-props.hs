@@ -18,6 +18,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import Control.Exception
 import Data.Binary as Bin
+import Data.Tuple (swap)
 import Lens.Family2
 
 {-
@@ -41,7 +42,9 @@ propsMap = [
  ]
 -}
 
+type PropertiesDB = [(Char,CharProps)]
 
+toProp :: Tag String -> PropertiesDB
 toProp (TagOpen _ psm) = [ (ix, CharProps{..}) | ix <- ixs ]
     where _name            = ps!"na"
           _generalCategory = read $ ps!"gc"
@@ -94,33 +97,46 @@ readDecompType s = Just (table!s)
               ]
 
 
-genDecompositions props = do gen "DecompD" "Map Char [Char]" (show datD)
-                             gen "DecompKD" "Map Char [Char]" (show datKD)
-    where datD, datKD :: M.Map Char [Char]
-          datD = datFiltered ((== Just DTCanonical) . _decompositionType)
-          datKD = datFiltered (const True)
+genDecompositions props = do
+  gen "DecompD" "Map Char [Char]" . show . decompositionsD $ props
+  gen "DecompKD" "Map Char [Char]" . show . decompositionsKD $ props
 
-          datFiltered :: (CharProps -> Bool) -> M.Map Char [Char]
-          datFiltered filt = M.fromList
+decompositionsD, decompositionsKD :: PropertiesDB -> M.Map Char [Char]
+decompositionsD = filteredMap ((== Just DTCanonical) . _decompositionType)
+decompositionsKD = filteredMap (const True)
+
+filteredMap :: (CharProps -> Bool) -> PropertiesDB -> M.Map Char [Char]
+filteredMap filt = M.fromList
                 . map (\(c,pro) -> (c, decompositionOf c (_decomposition pro)))
                 . filter (\(_,pro) -> filt pro
                                       && _decomposition pro /= DCSelf)
-                $ props
 
 
-genCCC props = gen "CombiningClass" "Map Char Int" (show dat)
-    where dat :: M.Map Char Int
+
+genCompositions props = gen "Comp" "Map [Char] Char" (show dat)
+    where dat = decomposeToComposeMap (fullDecExclData props) (decompositionsD props)
+          dat :: M.Map [Char] Char
+
+decomposeToComposeMap ex = M.fromList
+                           . map swap
+                           . filter (\(k,_) -> S.notMember k ex)
+                           . filter (\(k,v) -> length v == 1 || length v == 2)
+                           . M.toList
+
+
+genCCC = gen "CombiningClass" "Map Char Int" . show . dat
+    where dat :: PropertiesDB -> M.Map Char Int
           dat = M.fromList
                 . filter (\(_,cc) -> cc /= 0)
-                . map (second _combiningClass) $ props
+                . map (second _combiningClass)
 
 
-genFullDecExcl props = gen "FullDecompExclusions" "Set Char" (show dat)
-    where dat :: S.Set Char
-          dat = S.fromList
+
+genFullDecExcl = gen "FullDecompExclusions" "Set Char" . show . fullDecExclData
+fullDecExclData = S.fromList
                 . map fst
                 . filter (_fullDecompositionExclusion . snd)
-                $ props
+
 
 gen :: String -> String -> String -> IO ()
 gen name typ dat = writeFile ("Prose/Properties/" <> name <> ".hs") $
@@ -141,6 +157,7 @@ main = do props <- (readSavedProps
           genDecompositions props
           genCCC props
           genFullDecExcl props
+          genCompositions props
 
 
 
@@ -151,7 +168,7 @@ saveProps = do
   input <- readFile "data/ucd.all.flat.xml"
   let parsed = parseTags input
   let props = concatMap toProp . filter isChar $ parsed :: [(Char,CharProps)]
-  --writeUCD props
+  writeUCD props
   writeBinary props
   pure props
       where isChar (TagOpen "char" _) = True
