@@ -9,5 +9,5 @@ import Prose.Types
 
 codepoints :: Prose -> [CodePoint]
 codepoints (T t) = Text.unpack t
-codepoints (U bs) = UTF8.toString bs
+--codepoints (U bs) = UTF8.toString bs
 

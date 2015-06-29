@@ -17,12 +17,18 @@ cabal-version:       >=1.10
 
 Library
   exposed-modules:
-    Prose, Prose.Internal,
+    Prose,
+    Prose.Internal,
       Prose.Internal.Missings,
         Prose.Internal.SpacingMark, Prose.Internal.Grapheme_Extend,
         Prose.Internal.LV, Prose.Internal.LVT,
     Prose.Types,
     Prose.CharSet,
+    Prose.Properties.Types,
+      Prose.Properties.CombiningClass, Prose.Properties.Comp,
+      Prose.Properties.DecompD, Prose.Properties.DecompKD,
+    Prose.Normalization,
+      Prose.Normalization.Text,
     Prose.Segmentation.Graphemes
 
   other-modules:
@@ -46,7 +52,8 @@ Benchmark bench
   main-is:    benchmark/Bench.hs
   default-language: Haskell2010
   build-depends: base, text-icu, criterion,
-                 charset, text, bytestring,
+                 charset, text, bytestring, containers,
+                 lens-family-th,
                  data-list-sequences >= 0.1
   ghc-options: -O2
 
