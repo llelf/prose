@@ -19,10 +19,10 @@ g1_check = all ok NT.normalizationtest
                      nfkd == Norm.decomposeKD nfkc,
                      nfkd == Norm.decomposeKD nfkd,
 
-                     nfc  == Norm.compose src,
-                     nfc  == Norm.compose nfc,
-                     nfc  == Norm.compose nfd,
-                     nfkc == Norm.compose nfkc,
-                     nfkc == Norm.compose nfkd]
+                     nfc  == Norm.composeC src,
+                     nfc  == Norm.composeC nfc,
+                     nfc  == Norm.composeC nfd,
+                     nfkc == Norm.composeC nfkc,
+                     nfkc == Norm.composeC nfkd]
                 || error src
 

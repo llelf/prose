@@ -22,6 +22,9 @@ Library
       Prose.Internal.Missings,
         Prose.Internal.SpacingMark, Prose.Internal.Grapheme_Extend,
         Prose.Internal.LV, Prose.Internal.LVT,
+        -- XXX
+        Prose.Internal.GraphemeBreakTest,
+        Prose.Internal.NormalizationTest
     Prose.Types,
     Prose.CharSet,
     Prose.Properties.Types,
@@ -39,10 +42,8 @@ Library
     -- tooling
     lens-family-th,
     lens-family, containers,
-    parsec, tagsoup, hxt, hxt-tagsoup,
-    split, binary,
-    -- tests
-    QuickCheck
+    parsec, tagsoup,
+    split, binary
   -- hs-source-dirs:
   default-language:    Haskell2010
 
@@ -56,4 +57,18 @@ Benchmark bench
                  lens-family-th,
                  data-list-sequences >= 0.1
   ghc-options: -O2
+
+Test-suite tests
+  default-language: Haskell2010
+  type:             exitcode-stdio-1.0
+  ghc-options:      -O0
+  hs-source-dirs:   tests
+  main-is:          Tests.hs
+  other-modules:
+                NormalizationTests
+                SegmentationTests
+  build-depends:
+     base >=4 && <5,
+     prose,
+     QuickCheck, tasty, tasty-quickcheck, tasty-hunit
 
