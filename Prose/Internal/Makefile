@@ -11,6 +11,12 @@ LV.hs:
 LVT.hs:
 	./derive.hs set ../../data/GraphemeBreakProperty.txt LVT
 
+Hebrew_Letter.hs:
+	./derive.hs set ../../data/WordBreakProperty.txt Hebrew_Letter
+
+Numeric.hs:
+	./derive.hs set ../../data/WordBreakProperty.txt Numeric
+
 GraphemeBreakTest.hs:
 	./derive.hs break-test ../../data-test/GraphemeBreakTest.txt GraphemeBreakTest
 
