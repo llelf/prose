@@ -15,13 +15,10 @@ import Data.Maybe
 
 import qualified Prose.Internal.Missings as Missings
 import Prose.Types
+import Prose.Segmentation.Common
 
 
 -- Unicode 7.0.0 Annex #29
-
-cr, lf :: CharSet
-cr = CSet.singleton '\x000d'
-lf = CSet.singleton '\x000a'
 
 control :: CharSet
 control = Unicode.lineSeparator
@@ -44,7 +41,6 @@ spacingMark :: CharSet
 spacingMark = Missings.spacingMark
 
 
-
 l,v,t,lv,lvt :: CharSet
 -- Hangul_Syllable_Type of
 l = (⊙)['\x1100'..'\x115F'] ∪ (⊙)['\xA960'..'\xA97C'] -- Leading_Jamo
@@ -53,9 +49,6 @@ t = (⊙)['\x11A8'..'\x11FF'] ∪ (⊙)['\xD7CB'..'\xD7FB'] -- Trailing_Jamo
 
 lv = Missings.hangul_lv
 lvt = Missings.hangul_lvt
-
-whatever :: CharSet
-whatever = CSet.full
 
 
 -- This won't suffice for word/sentence segmentation
