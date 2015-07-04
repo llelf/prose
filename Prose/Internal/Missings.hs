@@ -10,6 +10,9 @@ import Prose.Internal.LV as Hangul_LV
 import Prose.Internal.LVT as Hangul_LVT
 import Prose.Internal.Hebrew_Letter as Hebrew_Letter
 import Prose.Internal.Numeric as Numeric
+import Prose.Internal.ALetter as ALetter
+import Prose.Internal.MidNum as MidNum
+import Prose.Internal.Katakana as Katakana
 
 spacingMark :: CharSet
 spacingMark = fromList . concat $ SpacingMark.spacingmark
@@ -24,8 +27,17 @@ hangul_lvt = fromList . concat $ Hangul_LVT.lvt
 hebrewLetter :: CharSet
 hebrewLetter = fromList . concat $ Hebrew_Letter.hebrew_letter
 
+aLetter :: CharSet
+aLetter = fromList . concat $ ALetter.aletter
+
 numeric :: CharSet
 numeric = fromList . concat $ Numeric.numeric
+
+midNum :: CharSet
+midNum = fromList . concat $ MidNum.midnum
+
+katakana :: CharSet
+katakana = fromList . concat $ Katakana.katakana
 
 defaultIgnorableCodePoint :: CharSet
 defaultIgnorableCodePoint = fromList $ map chr $ concat

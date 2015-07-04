@@ -17,6 +17,15 @@ Hebrew_Letter.hs:
 Numeric.hs:
 	./derive.hs set ../../data/WordBreakProperty.txt Numeric
 
+ALetter.hs:
+	./derive.hs set ../../data/WordBreakProperty.txt ALetter
+
+MidNum.hs:
+	./derive.hs set ../../data/WordBreakProperty.txt MidNum
+
+Katakana.hs:
+	./derive.hs set ../../data/WordBreakProperty.txt Katakana
+
 GraphemeBreakTest.hs:
 	./derive.hs break-test ../../data-test/GraphemeBreakTest.txt GraphemeBreakTest
 
