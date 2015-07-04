@@ -6,10 +6,21 @@ Pure-Haskell proper unicode strings
 ```
 
 
-✓⃞ grapheme segmentation
+segmentation:  
+  ✓⃞ grapheme  
+   ⃞ words  ⃞ tailored  
+   ⃞ sentences  ⃞ tailored  
+   ⃞ line-breaking  ⃞ tailored
 
 normalization:  
-  ✓⃞ NFD ✓⃞ NFKD ✓⃞ NFC
+  ✓⃞ NFD ✓⃞ NFKD ✓⃞ NFC  ⃞ NFKC
+
+collating  ⃞ …  
+transformation  ⃞ …  
+character properties  ⃞ …  
+other cldr  ⃞ …  
+
+
 
 -------
 
