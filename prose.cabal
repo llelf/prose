@@ -22,9 +22,12 @@ Library
       Prose.Internal.Missings,
         Prose.Internal.SpacingMark, Prose.Internal.Grapheme_Extend,
         Prose.Internal.LV, Prose.Internal.LVT,
+        Prose.Internal.Numeric, Prose.Internal.Hebrew_Letter,
+        Prose.Internal.ALetter, Prose.Internal.MidNum, Prose.Internal.Katakana,
         -- XXX
         Prose.Internal.GraphemeBreakTest,
-        Prose.Internal.NormalizationTest
+        Prose.Internal.WordBreakTest,
+        Prose.Internal.NormalizationTest,
     Prose.Types,
     Prose.CharSet,
     Prose.Properties.Types,
@@ -32,13 +35,16 @@ Library
       Prose.Properties.DecompD, Prose.Properties.DecompKD,
     Prose.Normalization,
       Prose.Normalization.Text,
-    Prose.Segmentation.Graphemes
+    Prose.Segmentation.Common,
+      Prose.Segmentation.Graphemes,
+      Prose.Segmentation.Words
 
   other-modules:
 
   -- other-extensions:    
   build-depends:   base, text, charset >= 0.3.7,
     data-list-sequences, bytestring, utf8-string,
+    attoparsec,
     -- tooling
     lens-family-th,
     lens-family, containers,
