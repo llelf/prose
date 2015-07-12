@@ -1,8 +1,8 @@
-module Prose.CharSet ((∩),(∪),(⊙),(∖),
+module Prose.CharSet ((∩),(∪),(⊙),(∖),(¬),
                       module Data.CharSet)
     where
 
-import Data.CharSet hiding (map)
+import Data.CharSet hiding (map,filter)
 
 
 (⊙) :: [Char] -> CharSet
@@ -15,3 +15,7 @@ infixl 6 ∪
 
 (∖) = difference
 infixl 6 ∖
+
+(¬) = complement
+infixl 7 ¬
+
