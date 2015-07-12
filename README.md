@@ -8,7 +8,7 @@ Pure-Haskell proper unicode strings
 
 segmentation:  
   ✓⃞ grapheme  
-   ⃞ words  ⃞ tailored  
+  ✓⃞ words  ⃞ tailored  
    ⃞ sentences  ⃞ tailored  
    ⃞ line-breaking  ⃞ tailored
 
