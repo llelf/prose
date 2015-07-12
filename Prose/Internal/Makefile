@@ -29,6 +29,9 @@ Katakana.hs:
 GraphemeBreakTest.hs:
 	./derive.hs break-test ../../data-test/GraphemeBreakTest.txt GraphemeBreakTest
 
+WordBreakTest.hs:
+	./derive.hs break-test ../../data-test/WordBreakTest.txt WordBreakTest
+
 NormalizationTest.hs:
 	./derive.hs norm-test ../../data-test/NormalizationTest.txt NormalizationTest
 
