@@ -2,7 +2,7 @@
 {-# LANGUAGE TupleSections #-}
 module Prose.Segmentation.Words where
 
-import Prose.CharSet as CSet hiding (map,filter)
+import Prose.CharSet as CSet
 import Prose.CharSet (CharSet)
 import qualified Data.CharSet.Unicode as Unicode
 import Prose.Segmentation.Common
@@ -12,16 +12,19 @@ import Control.Applicative
 import Control.Arrow
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.Internal as TI
 import Data.List
 import Data.Function
 import Data.Either (rights)
-import Data.Traversable
 import Data.Ord (comparing)
 import Data.Monoid
 import Control.Monad
 import qualified Data.Attoparsec.Internal.Types as A
 import Prose.Internal.Missings (hebrewLetter,numeric,aLetter,
                                 midNum,katakana,graphemeExtend)
+
+
+-- UAX#29, Unicode 8.0.0
 
 data RuleTerm = [CharSet] :× [CharSet]  -- do not break
               | [CharSet] :÷ [CharSet]  -- do break
@@ -62,7 +65,11 @@ instance Applicative (ExtendedParser) where
     pure v = ExtendedParser (pure v) (aux (pure v))
 -}
 
-data Rule a = SimpleRule a | ExtendedRule a
+-- UAX#29 4.1.1
+
+data Rule a = SimpleRule a
+            | ExtendedRule a    -- those have to be extended as per UAX#29:6.2 (see rule WB4 below)
+
 
 rulesSimple = map SimpleRule [
                     --          sot :÷                                     -- WB1
@@ -97,7 +104,7 @@ rulesExtended = map ExtendedRule [
 rulesWord = rulesSimple <> rulesExtended
 
 
-aux = extend ∪ Unicode.format
+aux = extend ∪ format
     where format = Unicode.format ∖ (⊙)['\x200B','\x200C','\x200D']
           extend = graphemeExtend ∪ Unicode.spacingCombiningMark
 
@@ -105,6 +112,7 @@ auxRule = charOf aux
 
 sep = (⊙)['\x0085','\x2028','\x2029']
 
+-- | Current parser position (in 16-bit words, NOT in code points).
 getPos :: Parser Int
 getPos = A.Parser $ \t pos more _ succ -> succ t pos more (A.fromPos pos)
 
@@ -117,25 +125,40 @@ isBreak brks | (Break:_) <- brks = True
              | otherwise         = False
 
 
+-- split :: Text -> [Int] -> [Text]
+-- split txt [] = [txt]
+-- split txt (s:ss) = t : split rest (map (subtract s) ss)
+--     where (t,rest) = T.splitAt s txt
+
+-- | >>> split "abc🐧" [1,3]
+-- ["a","bc","\128039"]
 split :: Text -> [Int] -> [Text]
-split txt [] = [txt]
-split txt (s:ss) = t : split rest (map (subtract s) ss)
-    where (t,rest) = T.splitAt s txt
+split t ss = split0 t (0:ss)
+
+split0 txt@(TI.Text a _ end) [s] = [TI.Text a s (end-s)]
+split0 txt@(TI.Text a _ _) (s1:s2:ss) = t : split0 txt (s2:ss)
+    where t = TI.Text a s1 (s2-s1)
+
 
 segment = map T.unpack . segmentT . T.pack
 
-segmentT str = split str
-             . map fst
+segmentT str = split str                                         -- split on
+             . map fst                                           -- indeces where there’s a break
              . filter snd
-             . map (second isBreak)
-             . map (\gr@((r,i):_) -> (i, map fst gr))
+             . map (second isBreak)                              -- (Int, break here? :: Bool)
+             . map (\gr@((_,i):_) -> (i, map fst gr))            -- (Int, results in order :: [Result])
              . groupBy ((==) `on` snd)
-             $ concat [ map (fmap (+i)) $ look str'
-                            | (i,str') <- zip [(0::Int)..] (T.tails str) ]
+             . sortBy (comparing snd)                            -- sort and group on
+             $ concat [ map (fmap (+i)) $ look str'              -- stream of (Result,Int)
+                                                                 -- (not necessary in order)
+                        | str' @(TI.Text _ i _) <- T.tails str ] -- going code point by code point
 
-
+-- | Results of all rules that’s matched (at the beginning of the string)
 look str = rights . map (lookRule str) $ rulesWord
 
+
+-- | Apply the specific rule at the beginning of the string
+lookRule :: Text -> Rule RuleTerm -> Either String (Result,Int)
 lookRule str rule = parseOnly (toParser rule) str
     where toParser0 f (a :× b) = (Don'tBreak,) <$> parserOf (lsParser f a) (lsParser f b)
           toParser0 f (a :÷ b) = (Break,)      <$> parserOf (lsParser f a) (lsParser f b)
@@ -148,10 +171,6 @@ lookRule str rule = parseOnly (toParser rule) str
           lsParser f = foldr1 (*>) . map f
 
           simParser c = charOf c
---          augParser' c = (charOf c <* auxRule) <|> charOf c
-          augParser c = (charOf c <* many auxRule)
-
-
---outcomeAt str = [ parseOnly r <- rulesWord ]
+          augParser c = charOf c <* many auxRule -- WB4
 
 
