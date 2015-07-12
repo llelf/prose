@@ -2,24 +2,29 @@
 {-# LANGUAGE TupleSections #-}
 module Prose.Segmentation.Words where
 
-import Prose.CharSet as CSet hiding (map)
+import Prose.CharSet as CSet hiding (map,filter)
 import Prose.CharSet (CharSet)
 import qualified Data.CharSet.Unicode as Unicode
 import Prose.Segmentation.Common
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text hiding (Result)
 import Data.Attoparsec.Combinator
 import Control.Applicative
+import Control.Arrow
+import Data.Text (Text)
 import qualified Data.Text as T
 import Data.List
+import Data.Function
 import Data.Either (rights)
 import Data.Traversable
 import Data.Ord (comparing)
+import Data.Monoid
+import Control.Monad
 import qualified Data.Attoparsec.Internal.Types as A
 import Prose.Internal.Missings (hebrewLetter,numeric,aLetter,
-                                midNum,katakana)
+                                midNum,katakana,graphemeExtend)
 
-data Rule = [CharSet] :× [CharSet]  -- do not break
-          | [CharSet] :÷ [CharSet]  -- do break
+data RuleTerm = [CharSet] :× [CharSet]  -- do not break
+              | [CharSet] :÷ [CharSet]  -- do break
 infix 0 :×,:÷
 
 
@@ -57,14 +62,17 @@ instance Applicative (ExtendedParser) where
     pure v = ExtendedParser (pure v) (aux (pure v))
 -}
 
+data Rule a = SimpleRule a | ExtendedRule a
 
-rulesWord = [
+rulesSimple = map SimpleRule [
                     --          sot :÷                                     -- WB1
                     --              :÷ eot                                 -- WB2
                                [cr] :× [lf],                               -- WB3li
                 [newline ∪ cr ∪ lf] :÷ [whatever],                         -- WB3a
                          [whatever] :÷ [newline ∪ cr ∪ lf],                -- WB3b
-      -- WB4   X (Extend ∪ Format)*  →  X
+                           [(¬)sep] :× [aux]                               -- WB4   X (Extend ∪ Format)* → X
+ ]
+rulesExtended = map ExtendedRule [
                          [ahLetter] :× [ahLetter],                         -- WB5
                          [ahLetter] :× [midLetter ∪ midNumLetQ, ahLetter], -- WB6
  [ahLetter, midLetter ∪ midNumLetQ] :× [ahLetter],                         -- WB7
@@ -85,18 +93,65 @@ rulesWord = [
  ]
 
 
+
+rulesWord = rulesSimple <> rulesExtended
+
+
+aux = extend ∪ Unicode.format
+    where format = Unicode.format ∖ (⊙)['\x200B','\x200C','\x200D']
+          extend = graphemeExtend ∪ Unicode.spacingCombiningMark
+
+auxRule = charOf aux
+
+sep = (⊙)['\x0085','\x2028','\x2029']
+
 getPos :: Parser Int
 getPos = A.Parser $ \t pos more _ succ -> succ t pos more (A.fromPos pos)
 
 
-data Result = Break | Don'tBreak deriving Show
 
-breaks str = --sortBy (comparing snd) $
-             concat [ rights . map ((fmap.fmap) (+i) . flip parseOnly str') . map toParser $ rulesWord
-                      | (i,str') <- zip [(0::Int)..] (T.tails str) ]
-    where toParser (a :× b) = (Don'tBreak,) <$> parserOf a b
-          toParser (a :÷ b) = (Break,)      <$> parserOf a b
+data Result = Break | Don'tBreak deriving (Show,Eq)
 
-          parserOf [a] [b] = charOf a *> lookAhead (charOf b) *> getPos
-          parserOf _ _ = fail ""
+isBreak :: [Result] -> Bool
+isBreak brks | (Break:_) <- brks = True
+             | otherwise         = False
+
+
+split :: Text -> [Int] -> [Text]
+split txt [] = [txt]
+split txt (s:ss) = t : split rest (map (subtract s) ss)
+    where (t,rest) = T.splitAt s txt
+
+segment = map T.unpack . segmentT . T.pack
+
+segmentT str = split str
+             . map fst
+             . filter snd
+             . map (second isBreak)
+             . map (\gr@((r,i):_) -> (i, map fst gr))
+             . groupBy ((==) `on` snd)
+             $ concat [ map (fmap (+i)) $ look str'
+                            | (i,str') <- zip [(0::Int)..] (T.tails str) ]
+
+
+look str = rights . map (lookRule str) $ rulesWord
+
+lookRule str rule = parseOnly (toParser rule) str
+    where toParser0 f (a :× b) = (Don'tBreak,) <$> parserOf (lsParser f a) (lsParser f b)
+          toParser0 f (a :÷ b) = (Break,)      <$> parserOf (lsParser f a) (lsParser f b)
+
+          toParser (SimpleRule r)   = toParser0 simParser r
+          toParser (ExtendedRule r) = toParser0 augParser r
+
+          parserOf pa pb = pa *> lookAhead pb *> getPos
+
+          lsParser f = foldr1 (*>) . map f
+
+          simParser c = charOf c
+--          augParser' c = (charOf c <* auxRule) <|> charOf c
+          augParser c = (charOf c <* many auxRule)
+
+
+--outcomeAt str = [ parseOnly r <- rulesWord ]
+
 
