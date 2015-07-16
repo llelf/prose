@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 
 import Criterion.Main
 import System.IO.Unsafe
@@ -22,24 +23,35 @@ testData = [("En",str_english), ("Ja",str_japanese), ("Chr",str_chars), ("Z",str
 charBreak = ICU.breakCharacter ICU.Root
 wordBreak = ICU.breakWord ICU.Root
 
+class IsStr a where
+    toText :: a -> T.Text
+    fromStr :: String -> a
 
-benchBoth :: (NFData r, NFData q)
-             => String -> (T.Text -> r) -> (String -> q) -> String -> [Benchmark]
+instance IsStr String where
+    toText = T.pack
+    fromStr = id
+instance IsStr T.Text where
+    toText = id
+    fromStr = T.pack
+
+
+benchBoth :: (NFData r, NFData q, IsStr s)
+             => String -> (T.Text -> r) -> (s -> q) -> s -> [Benchmark]
 benchBoth name icu prose str = [
-   bench (name<>"-icu") (nf icu (T.pack str)),
+   bench (name<>"-icu") (nf icu (toText str)),
    bench (name<>"-p")   (nf prose str)
  ]
 
-benchThese :: (NFData r, NFData q)
-              => (T.Text -> r) -> (String -> q) -> [Benchmark]
-benchThese icu prose = concat [ benchBoth name icu prose str | (name,str) <- testData ]
+benchThese :: (NFData r, NFData q, IsStr s)
+              => (T.Text -> r) -> (s -> q) -> [Benchmark]
+benchThese icu prose = concat [ benchBoth name icu prose (fromStr str) | (name,str) <- testData ]
 
 main = defaultMain [
         bgroup "seg"
         [
            bgroup "graph" $ benchThese (ICU.breaks charBreak) Graph.segment,
-           bgroup "words" $ benchThese (ICU.breaks wordBreak) Word.segment
-          -- bgroup "wordsT" $ benchThese (ICU.breaks wordBreak) Word.segmentT
+           bgroup "words" $ benchThese (ICU.breaks wordBreak) Word.segment,
+           bgroup "wordsT" $ benchThese (ICU.breaks wordBreak) Word.segmentT
         ],
 
         bgroup "norm"
