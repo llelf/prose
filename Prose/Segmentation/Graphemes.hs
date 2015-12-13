@@ -1,4 +1,13 @@
 -- | Grapheme Cluster Boundaries
+--
+-- Module      : Prose.Segmentation.Graphemes
+-- Copyright   : (c) 2014–2015 Antonio Nikishaev
+--
+-- License     : BSD-style
+-- Maintainer  : me@lelf.lu
+-- Stability   : experimental
+--
+--
 
 {-# LANGUAGE TypeOperators #-}
 module Prose.Segmentation.Graphemes

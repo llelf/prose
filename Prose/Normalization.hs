@@ -1,3 +1,12 @@
+-- |
+-- Module      : Prose.Normalization
+-- Copyright   : (c) 2014–2015 Antonio Nikishaev
+--
+-- License     : BSD-style
+-- Maintainer  : me@lelf.lu
+-- Stability   : experimental
+--
+--
 module Prose.Normalization where
 
 import qualified Prose.Properties.DecompD as NFD

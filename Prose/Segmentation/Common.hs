@@ -1,3 +1,12 @@
+-- |
+-- Module      : Prose.Segmentation.Common
+-- Copyright   : (c) 2014–2015 Antonio Nikishaev
+--
+-- License     : BSD-style
+-- Maintainer  : me@lelf.lu
+-- Stability   : experimental
+--
+--
 module Prose.Segmentation.Common where
 
 import Prose.CharSet as CSet hiding (map)

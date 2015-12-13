@@ -1,3 +1,14 @@
+-- |
+-- Module      : Prose.Segmentation.Words
+-- Copyright   : (c) 2014–2015 Antonio Nikishaev
+--
+-- License     : BSD-style
+-- Maintainer  : me@lelf.lu
+-- Stability   : experimental
+--
+--
+
+
 {-# LANGUAGE TypeOperators, DeriveFunctor, FlexibleInstances #-}
 {-# LANGUAGE TupleSections #-}
 module Prose.Segmentation.Words where
