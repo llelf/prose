@@ -44,7 +44,7 @@ Library
   -- other-extensions:    
   build-depends:   base, text, charset >= 0.3.7,
     data-list-sequences, bytestring, utf8-string,
-    attoparsec,
+    attoparsec, semigroups,
     -- tooling
     lens-family-th,
     lens-family, containers,
