@@ -21,7 +21,7 @@ import Data.Function
 type CodePoint = Char
 
 -- | Grapheme cluster
-type Grapheme = [Char]
+type Grapheme = Prose
 
 
 data Prose = T { unT :: T.Text } -- ^ Text's utf-16 data

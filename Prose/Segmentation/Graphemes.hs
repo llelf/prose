@@ -95,7 +95,7 @@ segment (c:cs) = go [c] c cs
                        | otherwise   = go (gr<>[b]) b rest
 -}
 
-segment :: [CodePoint] -> [Grapheme]
+segment :: [CodePoint] -> [[Char]]
 segment = ListSeq.splitSeq ((not.) . isBreak)
 
 
