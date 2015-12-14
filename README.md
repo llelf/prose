@@ -5,6 +5,9 @@ Pure-Haskell proper unicode strings
 ["བོ","ད","་","ཀྱི","་","སྐ","ད","་","ཡི","ག","།"]
 ```
 
+See [prose-lens](https://github.com/llelf/prose-lens) for a lens
+interface.
+
 
 segmentation:  
   ✓⃞ grapheme  
