@@ -1,0 +1,7 @@
+resolver: lts-5.14
+packages:
+- '.'
+extra-deps:
+  - data-list-sequences-0.1
+flags: {}
+extra-package-dbs: []
