@@ -151,8 +151,10 @@ split0 txt@(TI.Text a _ _) (s1:s2:ss) = t : split0 txt (s2:ss)
     where t = TI.Text a s1 (s2-s1)
 
 
+segment :: [Char] -> [[Char]]
 segment = map T.unpack . segmentT . T.pack
 
+segmentT :: Text -> [Text]
 segmentT str = split str                                         -- split on
              . map fst                                           -- indeces where there’s a break
              . filter snd
