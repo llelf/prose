@@ -25,10 +25,6 @@ Library
         Prose.Internal.LV, Prose.Internal.LVT,
         Prose.Internal.Numeric, Prose.Internal.Hebrew_Letter,
         Prose.Internal.ALetter, Prose.Internal.MidNum, Prose.Internal.Katakana,
-        -- XXX
-        Prose.Internal.GraphemeBreakTest,
-        Prose.Internal.WordBreakTest,
-        Prose.Internal.NormalizationTest,
     Prose.Types,
     Prose.CharSet,
     Prose.Properties.Types,
@@ -61,6 +57,7 @@ Benchmark bench
   default-language: Haskell2010
   build-depends: base, text-icu, criterion, deepseq,
                  charset, text, bytestring, containers,
+                 semigroups,
                  lens-family-th, attoparsec,
                  data-list-sequences >= 0.1
   ghc-options: -O2
@@ -69,13 +66,20 @@ Test-suite tests
   default-language: Haskell2010
   type:             exitcode-stdio-1.0
   ghc-options:      -O0
-  hs-source-dirs:   tests
+  hs-source-dirs:   tests .
   main-is:          Tests.hs
   other-modules:
                 NormalizationTests
                 SegmentationTests
+                Prose.Internal.GraphemeBreakTest
+                Prose.Internal.WordBreakTest
+                Prose.Internal.NormalizationTest
   build-depends:
      base >=4 && <5,
      prose,
+     charset, text, bytestring, containers,
+     semigroups,
+     lens-family-th, attoparsec,
+     data-list-sequences,
      QuickCheck, tasty, tasty-quickcheck, tasty-hunit
 
