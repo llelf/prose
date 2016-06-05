@@ -51,8 +51,8 @@ Library
     data-list-sequences, bytestring, utf8-string,
     attoparsec, semigroups,
     -- tooling, XXX move out there
-    lens-family-th,
-    lens-family, containers,
+    microlens, microlens-th,
+    containers,
     parsec, tagsoup,
     split, binary
   -- hs-source-dirs:
@@ -65,8 +65,9 @@ Benchmark bench
   default-language: Haskell2010
   build-depends: base, text-icu, criterion, deepseq,
                  charset, text, bytestring, containers,
+                 microlens, microlens-th,
                  semigroups,
-                 lens-family-th, attoparsec,
+                 attoparsec,
                  data-list-sequences >= 0.1
   ghc-options: -O2
 
@@ -85,9 +86,11 @@ Test-suite tests
   build-depends:
      base >=4 && <5,
      prose,
-     charset, text, bytestring, containers,
+     charset, text, bytestring,
+     microlens, microlens-th,
+     containers,
      semigroups,
-     lens-family-th, attoparsec,
+     attoparsec,
      data-list-sequences,
      QuickCheck, tasty, tasty-quickcheck, tasty-hunit
 

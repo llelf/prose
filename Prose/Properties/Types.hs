@@ -11,7 +11,8 @@
 
 module Prose.Properties.Types where
 
-import Lens.Family.TH
+import Lens.Micro
+import Lens.Micro.TH
 import GHC.Generics
 
 data CharProps = CharProps {

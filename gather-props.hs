@@ -19,7 +19,7 @@ import qualified Data.Set as S
 import Control.Exception
 import Data.Binary as Bin
 import Data.Tuple (swap)
-import Lens.Family2
+import Lens.Micro
 
 {-
 propsMap :: [(String, String -> CharProps -> CharProps)]
