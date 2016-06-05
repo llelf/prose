@@ -46,7 +46,8 @@ Library
   other-modules:
 
   -- other-extensions:    
-  build-depends:   base, text, charset >= 0.3.7,
+  build-depends:   base < 5,
+    text, charset >= 0.3.7,
     data-list-sequences, bytestring, utf8-string,
     attoparsec, semigroups,
     -- tooling, XXX move out there
